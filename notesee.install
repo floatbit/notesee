@@ -1,0 +1,115 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Install, update and uninstall functions for the notesee module.
+ *
+ */
+
+
+/**
+ * Implements hook_install().
+ */
+function notesee_install() {
+  variable_set('notesee_config_width', 1024);
+  variable_set('notesee_config_zindex', 400);
+  variable_set('notesee_config_center', TRUE);
+  variable_set('notesee_config_menu_top', 0);
+  variable_set('notesee_config_menu_left', 20);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function notesee_uninstall() {
+  variable_del('notesee_config_width');
+  variable_del('notesee_config_center');
+  variable_del('notesee_config_zindex');
+  variable_del('notesee_config_menu_top');
+  variable_del('notesee_config_menu_left');
+}
+
+/**
+ * Implements hook_schema().
+ */
+function notesee_schema() {
+  $schema['notesee'] = array(
+    'fields' => array(
+      'notesee_id' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Primary key',
+      ),
+      'uid' => array(
+        'description' => 'User who made this',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'path' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'note' => array(
+        'description' => 'Note',
+        'type' => 'text',
+        'not null' => TRUE,
+      ),
+      'width' => array(
+        'description' => 'Width',
+        'type' => 'int',
+        'size' => 'small',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'height' => array(
+        'description' => 'Height',
+        'type' => 'int',
+        'size' => 'small',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'x' => array(
+        'description' => 'X',
+        'type' => 'int',
+        'size' => 'small',
+        'unsigned' => FALSE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'y' => array(
+        'description' => 'Y',
+        'type' => 'int',
+        'size' => 'small',
+        'unsigned' => FALSE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the node was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'changed' => array(
+        'description' => 'The Unix timestamp when the node was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'indexes' => array(
+      'notesee_changed' => array('changed'),
+      'notesee_created' => array('created'),
+    ),
+    'primary key' => array('notesee_id'),
+  );
+  return $schema;
+}

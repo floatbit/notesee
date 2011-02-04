@@ -1,0 +1,216 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Main file of Notesee.
+ *
+ */
+ 
+/**
+ * Implements hook_permission().
+ */
+function notesee_permission() {
+  return array(
+    'administer notesee' => array(
+      'title' => t('Administer Gloss'),
+      'description' => t('Perform administration tasks for notesee.'),
+    ),
+    'edit notesee items' => array(
+      'title' => t('Create New Items'),
+      'description' => t('Allow users to edit notesee items.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function notesee_menu() {
+  $items = array();
+  $items['notesee/check'] = array(
+    'title' => 'Get items',
+    'description' => 'Get items for the current page and all pages',
+    'access arguments' => array('edit notesee items'),
+    'page callback' => 'notesee_check',
+    'type' => MENU_CALLBACK,
+  );
+  $items['notesee/save/%'] = array(
+    'title' => 'Save item',
+    'description' => 'Save item',
+    'access arguments' => array('edit notesee items'),
+    'page callback' => 'notesee_save',
+    'page arguments' => array(2),
+    'type' => MENU_CALLBACK,
+  );
+  $items['notesee/delete/%'] = array(
+    'title' => 'Delete item',
+    'description' => 'Delete item',
+    'access arguments' => array('edit notesee items'),
+    'page callback' => 'notesee_delete',
+    'page arguments' => array(2),
+    'type' => MENU_CALLBACK,
+  );
+  $items['notesee/menu-location/%/%'] = array(
+    'title' => 'Save menu location',
+    'description' => 'Save the menu location',
+    'access arguments' => array('edit notesee items'),
+    'page callback' => 'notesee_menu_location',
+    'page arguments' => array(2, 3),
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/config/notesee'] = array(
+    'title' => 'Notesee Settings',
+    'description' => 'Edit settings for Notesee',
+    'access arguments' => array('administer notesee'),
+    'page callback' => 'notesee_admin',
+    'file' => 'notesee.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_init().
+ */
+function notesee_init() {
+  global $user;
+  $ignore = array('admin/');
+  if (user_access('edit notesee items') && !strstr($_GET['q'], 'admin/') && !strstr($_GET['q'], 'node/add')) {
+    $config = '{
+      width: "' . variable_get('notesee_config_width', 1024) . '",
+      zindex: "' . variable_get('notesee_config_zindex', 400) . '",
+      center: "' . variable_get('notesee_config_center', TRUE) . '",
+      menu_top: "' . variable_get('notesee_config_menu_top', 0) . '",
+      menu_left: "' . variable_get('notesee_config_menu_left', 0) . '"
+    }';
+
+    drupal_add_library('system', 'ui.draggable');
+    drupal_add_js(drupal_get_path('module', 'notesee') . '/notesee.js');
+    drupal_add_js('jQuery(document).ready(function () { 
+        if (jQuery("#overlay-container").length == 0) {
+          jQuery.fn.notesee("init", ' . $config . '); 
+        }
+      });', array('type' => 'inline')
+    );
+    drupal_add_css(drupal_get_path('module', 'notesee') . '/notesee.css');
+  }
+
+}
+
+/**
+ * Gets all items for this page and all pages.
+ *
+ * @return
+ *   JSON of notesee items.
+ */
+function notesee_check() {
+  $path = check_plain($_POST['path']);
+  $data = array();
+  $data['current'] = array();
+  $data['all'] = array();
+  $result = db_query('SELECT * FROM {notesee} WHERE path = :path', array(':path' => $path));
+  foreach ($result as $record) {
+    $data['current'][] = $record;
+  }
+
+  // get all notesee items
+  $result = db_query('SELECT COUNT(*) AS total, path FROM `notesee` GROUP BY path');
+  foreach ($result as $record) {
+    $record->label = (strlen($record->path) == 1) ? $record->path : substr($record->path, 1);
+    $data['all'][] = $record;
+  }
+
+  // return a json string of notesee items
+  die(drupal_json_output($data));
+}
+
+
+/**
+ * Delete an item..
+ *
+ * @param integer $notesee_id
+ *   Primary key of a notesee item.
+ */
+function notesee_delete($notesee_id = 0) {
+  $notesee_id = (int) check_plain($notesee_id);
+  if ($notesee_id) {
+    db_delete('notesee')
+    ->condition('notesee_id', $notesee_id)
+    ->execute();
+  }
+}
+
+
+/**
+ * Save or update an item.
+ *
+ * @param integer $notesee_id
+ *   Primary key of a notesee item.
+ *
+ * @return DatabaseStatementInterface
+ *   JSON containing the notesee id.
+ */
+function notesee_save($notesee_id = 0) {
+  global $user;
+
+  $notesee_id = (int) check_plain($notesee_id);
+
+  // prepare the data to save
+  $data = array(
+    'note' => check_plain($_POST['note']),
+    'path' => check_plain($_POST['path']),
+    'uid' => $user->uid,
+    'x' => (int) check_plain($_POST['x']),
+    'y' => (int) check_plain($_POST['y']),
+    'width' => (int) check_plain($_POST['width']),
+    'height' => (int) check_plain($_POST['height']),
+    'path' => check_plain($_POST['path']),
+    'changed' => REQUEST_TIME,
+    'created' => REQUEST_TIME,
+  );
+
+  // if notesee_id update otherwise insert
+  if ($notesee_id) {
+    db_update('notesee')
+    ->condition('notesee_id', $notesee_id)
+    ->fields($data)
+    ->execute();
+  }
+  else {
+    $notesee_id = db_insert('notesee')
+    ->fields($data)
+    ->execute();
+  }
+
+  // return a json string containing the notesee_id
+  die(drupal_json_output(array('notesee_id' => $notesee_id)));
+}
+
+
+/**
+ * Save the to and left values of the menu.
+ *
+ * @param integer $top
+ *   Top value of the menu.
+ * @param integer $left
+ *   Left value of the menu.
+ *
+ * @return DatabaseStatementInterface
+ *   JSON containing the notesee id.
+ */
+function notesee_menu_location($top = 0, $left = 0) {
+  $top = (int) check_plain($top);
+  $left = (int) check_plain($left);
+  variable_set('notesee_config_menu_top', $top);
+  variable_set('notesee_config_menu_left', $left);
+}
+
+
+/**
+ * Callback function for the settings page.
+ * Form is in notesee.admin.inc
+ */
+function notesee_admin() {
+  return drupal_get_form('notesee_admin_form');
+}

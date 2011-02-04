@@ -1,0 +1,7 @@
+name = Notesee
+description = Add notes to a page.
+core = 7.x
+configure = admin/config/notesee
+files[] = notesee.admin.inc
+files[] = notesee.install
+files[] = notesee.module
