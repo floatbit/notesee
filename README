@@ -1,0 +1,21 @@
+Drupal 7 only.
+
+Notesee is a module which lets those with the correct permissions to add and edit notes on a page.
+
+Instructions:
+
+1) Download and install into your modules folder
+2) Enable
+3) Give a user role the permission to edit notesee items
+
+Once your user logs in there is a fixed menu at the bottom. It can be moved by dragging the blue bar. 
+
+Add a new note:
+
+1) Click +note in the menu.
+2) A new note will appear on screen - fill it in then click Save
+3) Existing notes can be deleted
+
+Notes can be:
+-Moved
+-Edited
