@@ -76,7 +76,7 @@ function notesee_menu() {
 function notesee_init() {
   global $user;
   $ignore = array('admin/');
-  if (user_access('edit notesee items') && !strstr($_GET['q'], 'admin/') && !strstr($_GET['q'], 'node/add')) {
+  if (user_access('edit notesee items') && !strstr($_GET['q'], 'admin/')) {
     $config = '{
       width: "' . variable_get('notesee_config_width', 1024) . '",
       zindex: "' . variable_get('notesee_config_zindex', 400) . '",
@@ -88,8 +88,8 @@ function notesee_init() {
     drupal_add_library('system', 'ui.draggable');
     drupal_add_js(drupal_get_path('module', 'notesee') . '/jquery.elastic.js');
     drupal_add_js(drupal_get_path('module', 'notesee') . '/notesee.js');
-    drupal_add_js('jQuery(document).ready(function () { 
-        if (jQuery("#overlay-container").length == 0) {
+    drupal_add_js('jQuery(document).ready(function () {
+        if (Drupal.overlay.isOpen == false) {
           jQuery.fn.notesee("init", ' . $config . '); 
         }
       });', array('type' => 'inline')
