@@ -28,7 +28,7 @@
           left: data.menu_left + 'px'
         }
       })
-      .append('<span class="notesee-menu-title">notesee</span><span class="notesee-menu-new">+ new</span>')
+      .append('<span class="notesee-menu-title">notesee</span><span class="notesee-menu-new">+ new</span><span class="notesee-menu-hide">* hide all')
       .appendTo('div#notesee')
       .draggable({
         axis: 'x',
@@ -50,9 +50,22 @@
       })
       .appendTo('div#notesee');
       
+      // create a new notesee item
       $('div#notesee-menu span.notesee-menu-new').click(function() {
         $.fn.notesee('add');
       })
+      
+      // show all bind
+      $('div#notesee-menu span.notesee-menu-hide').click(function() {
+      	if ($(this).html() == '* hide all') {
+      		$('div#notesee-items div.notesee-item').fadeOut(200);
+      		$(this).html('* show all');
+      	}
+      	else {
+      		$('div#notesee-items div.notesee-item').fadeIn(200);
+      		$(this).html('* hide all');
+      	}
+      });
       
       // get notes for this page
       $.fn.notesee('check');
@@ -84,7 +97,10 @@
     add: function(data) {
       // main container
       var div = $('<div/>', {
-        'class': 'notesee-item'
+        'class': 'notesee-item',
+        css: {
+        	display: 'none'
+        }
       });
       
       // add text container
@@ -111,6 +127,7 @@
           }
         }
       })
+      .fadeIn(400);
       
       // delete button
       $(div).find('span.action-delete').click(function(e) {
@@ -142,21 +159,6 @@
       $(div).find('span.action-save').click(function() {
         $.fn.notesee('save', div);
       });
-      
-      // text area change
-      $(div).find('textarea').keyup(function() {
-        if ($(this).val() == '') {
-          $(div)
-          .find('span.action-save')
-          .fadeOut(200);
-        }
-        else {
-          $(div)
-          .find('span.action-save')
-          .html('text changed, save?')
-          .fadeIn(200);
-        }
-      });
 
       // default values
       if (data) {
@@ -178,6 +180,23 @@
 	        left: 0
 				});      
       }
+      
+      // text area change
+      $(div).find('textarea').keyup(function() {
+        if ($(this).val() == '') {
+          $(div)
+          .find('span.action-save')
+          .fadeOut(200);
+        }
+        else {
+          $(div)
+          .find('span.action-save')
+          .html('text changed, save?')
+          .fadeIn(200);
+        }
+      })
+      .elastic();
+      
     },
     
     save: function(div) {

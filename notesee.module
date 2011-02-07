@@ -86,6 +86,7 @@ function notesee_init() {
     }';
 
     drupal_add_library('system', 'ui.draggable');
+    drupal_add_js(drupal_get_path('module', 'notesee') . '/jquery.elastic.js');
     drupal_add_js(drupal_get_path('module', 'notesee') . '/notesee.js');
     drupal_add_js('jQuery(document).ready(function () { 
         if (jQuery("#overlay-container").length == 0) {
