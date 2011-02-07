@@ -19,3 +19,8 @@ Add a new note:
 Notes can be:
 -Moved
 -Edited
+-Shown/Hidden
+
+An advice in these areas welcome: 
++ a better way to detect if the overlay is open so hook_init won't trigger
++ a list of all administration pages besides /admin OR if the current page is an admin page
