@@ -167,6 +167,7 @@ function notesee_save($notesee_id = 0) {
     'width' => (int) check_plain($_POST['width']),
     'height' => (int) check_plain($_POST['height']),
     'path' => check_plain($_POST['path']),
+    'locked' => (int) check_plain($_POST['locked']),
     'changed' => REQUEST_TIME,
     'created' => REQUEST_TIME,
   );

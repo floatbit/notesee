@@ -109,7 +109,7 @@
       
       // add actions container
       $(div)
-      .append('<div class="notesee-item-actions"><span class="action-save">save</span><span class="action-delete">delete</span></div>');
+      .append('<div class="notesee-item-actions"><span class="action-lock unlocked"></span><span class="action-delete">delete</span><span class="action-save">save</span></div>');
       
       // add to the item container
       $(div)
@@ -159,7 +159,38 @@
       $(div).find('span.action-save').click(function() {
         $.fn.notesee('save', div);
       });
-
+      
+      // lock button
+      // if locked unlock and enable textarea
+      // if unlocked lock and disable textarea
+      $(div).find('span.action-lock').click(function() {
+        if ($(this).hasClass('locked')) {
+          $(this)
+          .removeClass('locked')
+          .addClass('unlocked');
+          
+          $(div)
+          .find('textarea')
+          .removeAttr('readonly')
+          .removeClass('locked');
+        }
+        else {
+          $(this)
+          .removeClass('unlocked')
+          .addClass('locked');
+          
+          $(div)
+          .find('textarea')
+          .attr('readonly', true)
+          .addClass('locked');
+        }
+        
+        // save if this item has been saved before
+        if ($.data(div, 'notesee_id') != undefined && $.data(div, 'notesee_id') > 0) {
+          $.fn.notesee('save', div);
+        }
+        
+      })
       // default values
       if (data) {
         $(div).css({
@@ -169,9 +200,24 @@
         });
         
         $.data(div, 'notesee_id', data.notesee_id);
+        
         $(div)
         .find('textarea')
         .val(data.note);
+        
+        // set default class for the lock icon
+        $(div)
+        .find('span.action-lock')
+        .removeClass('locked unlocked')
+        .addClass( (data.locked == 1) ? 'locked' : 'unlocked')
+        
+        // disable textarea if this item is locked
+        if (data.locked == 1) {
+          $(div)
+          .find('textarea')
+          .attr('readonly', true) 
+          .addClass( (data.locked == 1) ? 'locked' : '')
+        }
       }
       else {
         $(div).css({
@@ -183,16 +229,18 @@
       
       // text area change
       $(div).find('textarea').keyup(function() {
-        if ($(this).val() == '') {
-          $(div)
-          .find('span.action-save')
-          .fadeOut(200);
-        }
-        else {
-          $(div)
-          .find('span.action-save')
-          .html('text changed, save?')
-          .fadeIn(200);
+        if ($(this).attr('readonly') == false) {
+          if ($(this).val() == '') {
+            $(div)
+            .find('span.action-save')
+            .fadeOut(200);
+          }
+          else {
+            $(div)
+            .find('span.action-save')
+            .html('text changed, save?')
+            .fadeIn(200);
+          }
         }
       })
       .elastic();
@@ -208,6 +256,7 @@
           path: path,
           x: parseInt($(div).css('left')),
           y: parseInt($(div).css('top')),
+          locked: $(div).find('span.action-lock').hasClass('locked') ? 1 : 0,
           width: parseInt($(div).css('width')),
           height: parseInt($(div).css('height'))
         },

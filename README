@@ -20,6 +20,7 @@ Notes can be:
 -Moved
 -Edited
 -Shown/Hidden
+-Locked
 
 An advice in these areas welcome: 
 + a better way to detect if the overlay is open so hook_init won't trigger

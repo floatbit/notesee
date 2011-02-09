@@ -7,8 +7,10 @@ div#notesee {
 div#notesee-menu {
   background-color: #000;
   color: #ccc;
-  -moz-box-shadow: 2px 2px 10px #333;
-  -webkit-box-shadow: 2px 2px 10px #333;
+  border: 1px solid #333;
+  box-shadow: 0 0 6px #333;
+  -moz-box-shadow: 0 0 6px #333;
+  -webkit-box-shadow: 0 0 6px #333;
 }
 div#notesee-menu span {
   display: block;
@@ -40,8 +42,9 @@ div#notesee-items div.notesee-item {
   background-color: #fff;
   border: 1px solid #333;
   color: #fff;
-  -moz-box-shadow: 2px 2px 10px #333;
-  -webkit-box-shadow: 2px 2px 10px #333;
+  box-shadow: 0 0 6px #333;
+  -moz-box-shadow: 0 0 6px #333;
+  -webkit-box-shadow: 0 0 6px #333;
 }
 div#notesee-items div.notesee-item div.notesee-item-text {
   line-height: 18px;
@@ -58,18 +61,44 @@ div#notesee-items div.notesee-item div.notesee-item-text textarea {
   overflow-x: hidden; 
   border: 1px solid #999;
 }
-
+div#notesee-items div.notesee-item div.notesee-item-text textarea.locked {
+  background-color: #fff;
+  border: 1px solid #ccc;
+}
 div#notesee-items div.notesee-item div.notesee-item-actions {
   margin-top: 4px;
   text-align: right;
 }
 div#notesee-items div.notesee-item div.notesee-item-actions span {
+  float: right;
   background-color: #ccc;
   color: #333;
   cursor: pointer;
   border: 1px solid #333;
-  padding: 2px 4px;
+  padding: 0 4px;
   margin-left: 4px;
+}
+div#notesee-items div.notesee-item div.notesee-item-actions span.action-lock {
+  border: medium none;
+  float: left;
+  height: 24px;
+  margin-bottom: 0;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0;
+  width: 26px;
+}
+div#notesee-items div.notesee-item div.notesee-item-actions span.locked {
+  background-color: transparent;
+  background-image: url("images/locked.png");
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+div#notesee-items div.notesee-item div.notesee-item-actions span.unlocked {
+  background-color: transparent;
+  background-image: url("images/unlocked.png");
+  background-position: center center;
+  background-repeat: no-repeat;
 }
 div#notesee-items div.notesee-item div.notesee-item-actions span.action-save {
   display: none;

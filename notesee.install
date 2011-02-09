@@ -92,6 +92,14 @@ function notesee_schema() {
         'not null' => TRUE,
         'default' => 0,
       ),
+      'locked' => array(
+        'description' => 'Locked status',
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => FALSE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
       'created' => array(
         'description' => 'The Unix timestamp when the node was created.',
         'type' => 'int',
@@ -112,4 +120,21 @@ function notesee_schema() {
     'primary key' => array('notesee_id'),
   );
   return $schema;
+}
+
+
+/**
+ * Insert new column locked
+ */
+function notesee_update_7000() {
+  $field = array(
+    'description' => 'Locked status',
+    'type' => 'int',
+    'size' => 'tiny',
+    'unsigned' => FALSE,
+    'not null' => TRUE,
+    'default' => 0,
+  );
+  db_add_field('notesee', 'locked', $field);
+
 }
