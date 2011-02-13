@@ -34,6 +34,9 @@
         axis: 'x',
         handle: 'span.notesee-menu-title',
         stop: function(event, ui) {
+        	if (parseInt($('div#notesee-menu').css('left')) < 0) {
+        		$('div#notesee-menu').css('left', 0);
+        	}
           $.ajax({
             type: 'POST',
             url: '/notesee/menu-location/' + parseInt($('div#notesee-menu').css('top')) + '/' + parseInt($('div#notesee-menu').css('left'))
@@ -238,7 +241,7 @@
           else {
             $(div)
             .find('span.action-save')
-            .html('text changed, save?')
+            .html('save?')
             .fadeIn(200);
           }
         }
